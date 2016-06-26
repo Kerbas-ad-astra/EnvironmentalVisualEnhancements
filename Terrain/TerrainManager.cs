@@ -1,59 +1,69 @@
-﻿using System;
+﻿using Utils;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
+using EVEManager;
+using ShaderLoader;
 
 namespace Terrain
 {
-    //[KSPAddon(KSPAddon.Startup.MainMenu, false)]
-    public class TerrainManager : MonoBehaviour
+    public class TerrainManager : GenericEVEManager<TerrainObject>
     {
-        static List<CelestialBody> CelestialBodyList = new List<CelestialBody>();
-        static bool setup = false;
+        public override ObjectType objectType { get { return ObjectType.BODY; } }
+        public override String configName { get { return "EVE_TERRAIN"; } }
 
-        public static void Log(String message)
-        {
-            UnityEngine.Debug.Log("TerrainManager: " + message);
-        }
+        //private bool camerasInitialized = false;
+        private static Shader oceanShader = null;
+        private static Shader planetShader = null;
+        private static Shader terrainShader = null;
+        private static Shader oceanBackingShader = null;
 
-        protected void Awake()
+        public static Shader OceanShader
         {
-            if (!setup)
+            get
             {
-                UnityEngine.Object[] celestialBodies = CelestialBody.FindObjectsOfType(typeof(CelestialBody));
-                foreach (CelestialBody cb in celestialBodies)
+                if (oceanShader == null)
                 {
-                    CelestialBodyList.Add(cb);
-                    if (cb.name == "Kerbin")
-                    {
-                        PQS pqs = cb.pqsController;
-                        if(cb == GameObject.Find("localSpace").transform.FindChild("Kerbin"))
-                        {
-                            Log("CB and localspace are equal!");
-
-                        }
-                        Assembly assembly = Assembly.GetExecutingAssembly();
-                        StreamReader shaderStreamReader = new StreamReader(assembly.GetManifestResourceStream("Terrain.Shaders.Compiled-Vertex.shader"));
-                        //StreamReader shaderStreamReader = new StreamReader(assembly.GetManifestResourceStream("Terrain.Shaders.Compiled-Normals.shader"));
-                        //StreamReader shaderStreamReader = new StreamReader(assembly.GetManifestResourceStream("Terrain.Shaders.Compiled-Tangents.shader"));
-                        //StreamReader shaderStreamReader = new StreamReader(assembly.GetManifestResourceStream("Terrain.Shaders.Compiled-uv1.shader"));
-                        //StreamReader shaderStreamReader = new StreamReader(assembly.GetManifestResourceStream("Terrain.Shaders.Compiled-uv2.shader"));
-                        //StreamReader shaderStreamReader = new StreamReader(assembly.GetManifestResourceStream("Terrain.Shaders.Compiled-Terrain.shader"));
-
-                        Log("reading stream...");
-                        String shaderTxt = shaderStreamReader.ReadToEnd();
-                        pqs.surfaceMaterial.shader = Shader.Find("VertexLit");
-                        
-                        pqs.ChildSpheres[0].surfaceMaterial.shader = new Material(shaderTxt).shader;
-
-                    }
-                }
-                setup = true;
+                    oceanShader = ShaderLoaderClass.FindShader("EVE/Ocean");
+                } return oceanShader;
             }
         }
+        public static Shader PlanetShader
+        {
+            get
+            {
+                if (planetShader == null)
+                {
+                    planetShader = ShaderLoaderClass.FindShader("EVE/Planet");
+                } return planetShader;
+            }
+        }
+        public static Shader TerrainShader
+        {
+            get
+            {
+                if (terrainShader == null)
+                {
+                    terrainShader = ShaderLoaderClass.FindShader("EVE/Terrain");
+                } return terrainShader;
+            }
+        }
+        
+        public static Shader OceanBackingShader
+        {
+            get
+            {
+                if (oceanBackingShader == null)
+                {
+                    oceanBackingShader = ShaderLoaderClass.FindShader("EVE/OceanBack");
+                } return oceanBackingShader;
+            }
+        }
+        
+
     }
 }

@@ -45,7 +45,7 @@ local.properties
 
 [Dd]ebug/
 [Rr]elease/
-x64/
+
 build/
 [Bb]in/
 [Oo]bj/
@@ -213,3 +213,16 @@ pip-log.txt
 
 #Mr Developer
 .mr.developer.cfg
+
+#Releases
+*.dll
+
+#debug info
+*.pdb
+*.mdb
+
+#Shaders
+ContentEVE/GameData/EnvironmentalVisualEnhancements/Shaders/*
+
+#ZIP Distributions
+*.zip
